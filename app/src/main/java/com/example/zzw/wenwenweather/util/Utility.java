@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import com.example.zzw.wenwenweather.db.City;
 import com.example.zzw.wenwenweather.db.County;
 import com.example.zzw.wenwenweather.db.Province;
+import com.example.zzw.wenwenweather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,7 +65,7 @@ public class Utility {
                     JSONObject countyObject=allCounties.getJSONObject(i);
                     County county=new County();
                     county.setCountyName(countyObject.getString("name"));
-                    county.setCountyCode(countyObject.getInt("id"));
+                    county.setWeatherId(countyObject.getString("weather_id"));
                     county.setCityId(CityId);
                     county.save();
                 }
@@ -73,5 +75,17 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    public static Weather handleWeatherResponse(String response){
+        try{
+            JSONObject jsonObject=new JSONObject(response);
+            JSONArray jsonArray=jsonObject.getJSONArray("HeWeather");
+            String weatherContent=jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }
